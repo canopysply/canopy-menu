@@ -1,0 +1,622 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Canopy — Wholesale Menu</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@400;600;700;800&family=Share+Tech+Mono&display=swap" rel="stylesheet">
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  :root {
+    --green:        #4a8c5c;
+    --green-bright: #5db870;
+    --green-dim:    rgba(74,140,92,0.10);
+    --green-border: rgba(74,140,92,0.28);
+    --brown:        #8c6a3f;
+    --brown-dim:    rgba(140,106,63,0.10);
+    --brown-border: rgba(140,106,63,0.28);
+    --bg:           #05080a;
+    --bg2:          #090e0b;
+    --bg3:          #0e1510;
+    --bg4:          #111a13;
+    --border:       rgba(255,255,255,0.055);
+    --text:         #cdd8c5;
+    --text-bright:  #e8f0e0;
+    --muted:        #3d5240;
+    --muted2:       #243028;
+  }
+
+  html { scroll-behavior: smooth; }
+
+  body {
+    font-family: 'Barlow Condensed', sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    min-height: 100vh;
+    overflow-x: hidden;
+  }
+
+  body::before {
+    content: '';
+    position: fixed; inset: 0;
+    background-image:
+      linear-gradient(rgba(74,140,92,0.03) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(74,140,92,0.03) 1px, transparent 1px);
+    background-size: 52px 52px;
+    pointer-events: none;
+    z-index: 0;
+  }
+
+  body::after {
+    content: '';
+    position: fixed; inset: 0;
+    background:
+      radial-gradient(ellipse 60% 40% at 80% 10%, rgba(74,140,92,0.06) 0%, transparent 60%),
+      radial-gradient(ellipse 40% 50% at 10% 80%, rgba(140,106,63,0.05) 0%, transparent 60%);
+    pointer-events: none;
+    z-index: 0;
+  }
+
+  /* HERO */
+  .hero {
+    position: relative; z-index: 1;
+    padding: 64px 52px 48px;
+    border-bottom: 1px solid var(--border);
+  }
+
+  .badge {
+    display: inline-flex; align-items: center; gap: 8px;
+    font-family: 'Share Tech Mono', monospace;
+    font-size: 10px; letter-spacing: 0.2em;
+    text-transform: uppercase;
+    color: var(--green-bright);
+    border: 1px solid var(--green-border);
+    background: var(--green-dim);
+    padding: 5px 14px;
+    margin-bottom: 24px;
+  }
+
+  .live-dot {
+    width: 6px; height: 6px; border-radius: 50%;
+    background: var(--green-bright);
+    animation: pulse 2.4s ease-in-out infinite;
+  }
+
+  @keyframes pulse {
+    0%,100% { opacity:1; transform:scale(1); }
+    50% { opacity:0.25; transform:scale(0.7); }
+  }
+
+  .hero h1 {
+    font-size: clamp(52px, 9vw, 96px);
+    font-weight: 800;
+    letter-spacing: 0.06em;
+    line-height: 0.9;
+    color: var(--text-bright);
+    text-transform: uppercase;
+    margin-bottom: 10px;
+  }
+
+  .hero h1 .g { color: var(--green-bright); }
+  .hero h1 .b { color: var(--brown); }
+
+  .hero-divider {
+    width: 48px; height: 2px;
+    background: linear-gradient(90deg, var(--green), var(--brown));
+    margin: 20px 0 16px;
+  }
+
+  .hero-sub {
+    font-family: 'Share Tech Mono', monospace;
+    font-size: 10px; letter-spacing: 0.18em;
+    color: var(--muted); text-transform: uppercase;
+  }
+
+  /* STATUS */
+  .statusbar {
+    position: relative; z-index: 1;
+    display: flex; align-items: center; gap: 28px; flex-wrap: wrap;
+    padding: 10px 52px;
+    background: var(--bg2);
+    border-bottom: 1px solid var(--border);
+    font-family: 'Share Tech Mono', monospace;
+    font-size: 10px; color: var(--muted); letter-spacing: 0.1em;
+  }
+
+  .statusbar .val { color: var(--green-bright); margin-left: 4px; }
+  .statusbar .right { margin-left: auto; color: var(--brown); }
+
+  /* NAV */
+  .nav {
+    position: relative; z-index: 1;
+    display: flex; padding: 0 52px;
+    border-bottom: 1px solid var(--border);
+    background: var(--bg); overflow-x: auto;
+  }
+  .nav::-webkit-scrollbar { display: none; }
+
+  .nav-tab {
+    font-family: 'Barlow Condensed', sans-serif;
+    font-size: 12px; font-weight: 700; letter-spacing: 0.15em;
+    text-transform: uppercase; padding: 15px 22px;
+    color: var(--muted); cursor: pointer;
+    border: none; background: none;
+    border-bottom: 2px solid transparent; white-space: nowrap;
+    transition: all 0.2s;
+  }
+  .nav-tab:hover { color: var(--text); }
+  .nav-tab.active { color: var(--green-bright); border-bottom-color: var(--green-bright); }
+
+  /* SECTIONS */
+  .section { position: relative; z-index: 1; display: none; padding: 32px 52px 72px; }
+  .section.active { display: block; }
+
+  .section-header {
+    display: flex; align-items: baseline; gap: 14px;
+    margin-bottom: 24px; padding-bottom: 14px;
+    border-bottom: 1px solid var(--border);
+  }
+
+  .section-title {
+    font-size: 11px; font-weight: 700; letter-spacing: 0.22em;
+    text-transform: uppercase; color: var(--text-bright);
+    white-space: nowrap;
+  }
+  .section-count { font-family: 'Share Tech Mono', monospace; font-size: 10px; color: var(--muted); white-space: nowrap; }
+  .section-note { font-family: 'Share Tech Mono', monospace; font-size: 10px; color: var(--green-bright); margin-left: auto; letter-spacing: 0.06em; white-space: nowrap; }
+
+  /* FILTERS */
+  .filters { display: flex; gap: 6px; flex-wrap: wrap; margin-bottom: 20px; }
+  .filter-btn {
+    font-family: 'Barlow Condensed', sans-serif;
+    font-size: 11px; font-weight: 700; letter-spacing: 0.12em; text-transform: uppercase;
+    padding: 6px 14px; border: 1px solid var(--border);
+    background: transparent; color: var(--muted); cursor: pointer; transition: all 0.15s;
+  }
+  .filter-btn:hover, .filter-btn.active { border-color: var(--green-border); color: var(--green-bright); background: var(--green-dim); }
+  .filter-btn.f-indica.active { border-color: rgba(80,180,80,0.35); color: #5db870; background: rgba(80,180,80,0.07); }
+  .filter-btn.f-sativa.active { border-color: rgba(160,208,80,0.35); color: #a0d060; background: rgba(160,208,80,0.07); }
+  .filter-btn.f-hybrid.active { border-color: var(--brown-border); color: #c09050; background: var(--brown-dim); }
+
+  /* FLOWER GRID */
+  .flower-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+    gap: 1px; background: var(--border); border: 1px solid var(--border);
+  }
+
+  .flower-card {
+    background: var(--bg); padding: 20px 22px;
+    transition: background 0.2s; position: relative; overflow: hidden;
+  }
+  .flower-card::before {
+    content: ''; position: absolute; left: 0; top: 0; bottom: 0; width: 2px;
+    background: var(--green); transform: scaleY(0); transform-origin: bottom; transition: transform 0.3s;
+  }
+  .flower-card:hover { background: var(--bg3); }
+  .flower-card:hover::before { transform: scaleY(1); }
+  .flower-card[data-type="indica"]::before { background: #5db870; }
+  .flower-card[data-type="sativa"]::before { background: #a0d060; }
+  .flower-card[data-type="hybrid"]::before { background: var(--brown); }
+
+  .flower-type { font-family: 'Share Tech Mono', monospace; font-size: 9px; letter-spacing: 0.22em; text-transform: uppercase; margin-bottom: 8px; }
+  .t-indica { color: #5db870; }
+  .t-sativa { color: #a0d060; }
+  .t-hybrid { color: #c09050; }
+
+  .flower-name { font-size: 18px; font-weight: 700; letter-spacing: 0.04em; color: var(--text-bright); line-height: 1.1; margin-bottom: 14px; text-transform: uppercase; }
+
+  .flower-footer { display: flex; align-items: center; justify-content: space-between; }
+  .flower-price { font-size: 20px; font-weight: 800; color: var(--green-bright); letter-spacing: 0.02em; }
+  .flower-price .unit { font-family: 'Share Tech Mono', monospace; font-size: 9px; font-weight: 400; color: var(--muted); margin-left: 3px; }
+  .flower-stock { font-family: 'Share Tech Mono', monospace; font-size: 10px; color: var(--green-bright); background: var(--green-dim); border: 1px solid var(--green-border); padding: 3px 9px; }
+
+  /* SPLIT-FLAP ANIMATION */
+  @keyframes flap {
+    0%   { transform: rotateX(0deg);   opacity: 1; }
+    50%  { transform: rotateX(-90deg); opacity: 0; }
+    51%  { transform: rotateX(90deg);  opacity: 0; }
+    100% { transform: rotateX(0deg);   opacity: 1; }
+  }
+
+  .flap-char {
+    display: inline-block;
+    animation: flap 0.06s ease-in-out both;
+  }
+
+  /* SMALLS */
+  .smalls-wrap {
+    background: var(--bg3); border: 1px solid var(--border); border-left: 3px solid var(--brown);
+    padding: 44px 48px; display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 32px;
+  }
+  .smalls-title { font-size: 36px; font-weight: 800; letter-spacing: 0.08em; text-transform: uppercase; color: var(--text-bright); margin-bottom: 12px; }
+  .smalls-desc { font-family: 'Share Tech Mono', monospace; font-size: 10px; color: var(--muted); letter-spacing: 0.07em; line-height: 1.9; }
+  .smalls-price-big { font-size: 56px; font-weight: 800; letter-spacing: 0.02em; color: var(--brown); line-height: 1; }
+  .smalls-price-big .unit { font-family: 'Share Tech Mono', monospace; font-size: 14px; font-weight: 400; color: var(--muted); }
+
+  /* CONCENTRATES */
+  .conc-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 1px; background: var(--border); border: 1px solid var(--border); }
+  .conc-card { background: var(--bg); overflow: hidden; transition: background 0.2s; }
+  .conc-card:hover { background: var(--bg3); }
+  .conc-img { width: 100%; height: 210px; object-fit: cover; filter: brightness(0.8) saturate(0.8) sepia(0.15); display: block; transition: filter 0.3s; }
+  .conc-card:hover .conc-img { filter: brightness(0.9) saturate(1) sepia(0.05); }
+  .conc-body { padding: 22px; }
+  .conc-name { font-size: 20px; font-weight: 800; letter-spacing: 0.06em; text-transform: uppercase; color: var(--text-bright); margin-bottom: 16px; }
+  .conc-prices { display: flex; gap: 10px; }
+  .conc-price-box { flex: 1; background: var(--bg4); border: 1px solid var(--border); border-top: 2px solid var(--green); padding: 12px 14px; }
+  .conc-price-label { font-family: 'Share Tech Mono', monospace; font-size: 9px; letter-spacing: 0.18em; text-transform: uppercase; color: var(--muted); margin-bottom: 5px; }
+  .conc-price-val { font-size: 24px; font-weight: 800; letter-spacing: 0.02em; color: var(--green-bright); }
+
+  /* DISPOSABLES */
+  .disp-list { display: flex; flex-direction: column; gap: 1px; background: var(--border); border: 1px solid var(--border); }
+  .disp-row { display: flex; align-items: center; justify-content: space-between; background: var(--bg); padding: 24px 28px; transition: background 0.2s; border-left: 2px solid transparent; }
+  .disp-row:hover { background: var(--bg3); border-left-color: var(--green); }
+  .disp-name { font-size: 20px; font-weight: 700; letter-spacing: 0.06em; text-transform: uppercase; color: var(--text-bright); }
+  .disp-sub { font-family: 'Share Tech Mono', monospace; font-size: 10px; color: var(--muted); margin-top: 4px; letter-spacing: 0.08em; }
+  .disp-price { font-size: 26px; font-weight: 800; letter-spacing: 0.02em; color: var(--green-bright); }
+
+  /* EDIBLES */
+  .slushy-card { background: var(--bg3); border: 1px solid var(--border); border-top: 2px solid var(--brown); padding: 28px; margin-bottom: 1px; transition: background 0.2s; }
+  .slushy-card:hover { background: var(--bg4); }
+  .slushy-top { margin-bottom: 20px; }
+  .slushy-name { font-size: 22px; font-weight: 800; letter-spacing: 0.08em; text-transform: uppercase; color: var(--text-bright); }
+  .slushy-sub { font-family: 'Share Tech Mono', monospace; font-size: 10px; color: var(--muted); margin-top: 5px; letter-spacing: 0.07em; }
+  .slushy-tiers { display: grid; grid-template-columns: repeat(4,1fr); gap: 8px; }
+  @media(max-width:580px){ .slushy-tiers { grid-template-columns: repeat(2,1fr); } }
+  .slushy-tier { background: var(--bg); border: 1px solid var(--border); padding: 14px 10px; text-align: center; border-bottom: 2px solid var(--brown); transition: background 0.2s; }
+  .slushy-tier:hover { background: var(--bg2); }
+  .tier-dose { font-family: 'Share Tech Mono', monospace; font-size: 10px; color: var(--brown); letter-spacing: 0.12em; margin-bottom: 5px; }
+  .tier-price { font-size: 22px; font-weight: 800; letter-spacing: 0.02em; color: var(--text-bright); }
+  .tier-note { font-family: 'Share Tech Mono', monospace; font-size: 9px; color: var(--muted); margin-top: 3px; letter-spacing: 0.1em; }
+
+  .edibles-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(260px, 1fr)); gap: 1px; background: var(--border); border: 1px solid var(--border); }
+  .edible-card { background: var(--bg); padding: 24px; transition: background 0.2s; border-left: 2px solid transparent; }
+  .edible-card:hover { background: var(--bg3); border-left-color: var(--brown); }
+  .edible-cat { font-family: 'Share Tech Mono', monospace; font-size: 9px; letter-spacing: 0.2em; text-transform: uppercase; color: var(--brown); margin-bottom: 10px; }
+  .edible-name { font-size: 18px; font-weight: 700; letter-spacing: 0.06em; text-transform: uppercase; color: var(--text-bright); margin-bottom: 10px; }
+  .edible-details { font-family: 'Share Tech Mono', monospace; font-size: 10px; color: var(--muted); line-height: 1.8; margin-bottom: 16px; letter-spacing: 0.04em; }
+  .edible-price { font-size: 22px; font-weight: 800; color: var(--green-bright); letter-spacing: 0.02em; }
+  .edible-price .unit { font-family: 'Share Tech Mono', monospace; font-size: 10px; font-weight: 400; color: var(--muted); margin-left: 4px; }
+
+  /* CONTACT */
+  .contact-wrap { max-width: 580px; }
+  .contact-intro { font-family: 'Share Tech Mono', monospace; font-size: 11px; color: var(--muted); letter-spacing: 0.06em; line-height: 1.9; margin-bottom: 32px; border-left: 2px solid var(--green-border); padding-left: 16px; }
+  .form-row { margin-bottom: 16px; }
+  .form-label { display: block; font-family: 'Share Tech Mono', monospace; font-size: 9px; letter-spacing: 0.22em; text-transform: uppercase; color: var(--muted); margin-bottom: 7px; }
+  .form-input, .form-textarea, .form-select { width: 100%; background: var(--bg2); border: 1px solid var(--border); color: var(--text-bright); font-family: 'Share Tech Mono', monospace; font-size: 12px; padding: 13px 15px; outline: none; transition: border-color 0.2s; appearance: none; -webkit-appearance: none; }
+  .form-input::placeholder, .form-textarea::placeholder { color: var(--muted2); }
+  .form-input:focus, .form-textarea:focus, .form-select:focus { border-color: var(--green-border); }
+  .form-textarea { height: 120px; resize: vertical; }
+  .form-select option { background: #090e0b; }
+  .form-submit { font-family: 'Barlow Condensed', sans-serif; font-size: 13px; font-weight: 800; letter-spacing: 0.2em; text-transform: uppercase; background: var(--green); color: #05080a; border: none; padding: 15px 36px; cursor: pointer; margin-top: 8px; transition: background 0.2s; }
+  .form-submit:hover { background: var(--green-bright); }
+  .form-success { display: none; background: var(--green-dim); border: 1px solid var(--green-border); color: var(--green-bright); font-family: 'Share Tech Mono', monospace; font-size: 11px; padding: 16px 20px; margin-top: 16px; letter-spacing: 0.07em; }
+
+  /* FOOTER */
+  .refresh-bar { position: relative; z-index: 1; padding: 10px 52px; font-family: 'Share Tech Mono', monospace; font-size: 10px; color: var(--muted2); letter-spacing: 0.1em; text-align: right; border-top: 1px solid var(--border); background: var(--bg); }
+
+  @media (max-width: 640px) {
+    .hero, .statusbar, .nav, .section, .refresh-bar { padding-left: 20px; padding-right: 20px; }
+    .smalls-wrap { padding: 28px 20px; }
+    .smalls-price-big { font-size: 40px; }
+  }
+</style>
+</head>
+<body>
+
+<header class="hero">
+  <div class="badge"><div class="live-dot"></div>Live Wholesale Board</div>
+  <h1><span class="g">CAN</span><span class="b">OPY</span></h1>
+  <div class="hero-divider"></div>
+  <div class="hero-sub">Indoor Flower · Concentrates · Disposables · Edibles</div>
+</header>
+
+<div class="statusbar">
+  <span>Strains in stock: <span class="val" id="flower-count">28</span></span>
+  <span>Updated: <span class="val" id="last-updated">—</span></span>
+
+</div>
+
+<nav class="nav">
+  <button class="nav-tab active" onclick="showTab('flower',this)">Indoor Flower</button>
+  <button class="nav-tab" onclick="showTab('smalls',this)">Smalls</button>
+  <button class="nav-tab" onclick="showTab('concentrates',this)">Concentrates</button>
+  <button class="nav-tab" onclick="showTab('disposables',this)">Disposables</button>
+  <button class="nav-tab" onclick="showTab('edibles',this)">Edibles</button>
+  <button class="nav-tab" onclick="showTab('contact',this)">Inquire</button>
+</nav>
+
+<!-- FLOWER -->
+<div class="section active" id="sec-flower">
+  <div class="section-header">
+    <span class="section-title">Indoor Flower</span>
+    <span class="section-count" id="flower-label">28 strains in stock</span>
+    <span class="section-note">$1,300 / lb</span>
+  </div>
+  <div class="filters">
+    <button class="filter-btn active" onclick="filterFlower('all',this)">All</button>
+    <button class="filter-btn f-indica" onclick="filterFlower('indica',this)">Indica</button>
+    <button class="filter-btn f-sativa" onclick="filterFlower('sativa',this)">Sativa</button>
+    <button class="filter-btn f-hybrid" onclick="filterFlower('hybrid',this)">Hybrid</button>
+  </div>
+  <div class="flower-grid" id="flower-grid">
+
+    <div class="flower-card" data-type="indica"><div class="flower-type t-indica">Indica</div><div class="flower-name">Alien Grapes</div><div class="flower-footer"><div class="flower-price">$1,300<span class="unit">/lb</span></div><div class="flower-stock">10 lbs</div></div></div>
+    <div class="flower-card" data-type="hybrid"><div class="flower-type t-hybrid">Hybrid</div><div class="flower-name">Angry Apple</div><div class="flower-footer"><div class="flower-price">$1,300<span class="unit">/lb</span></div><div class="flower-stock">5 lbs</div></div></div>
+    <div class="flower-card" data-type="indica"><div class="flower-type t-indica">Indica</div><div class="flower-name">Black Ice</div><div class="flower-footer"><div class="flower-price">$1,300<span class="unit">/lb</span></div><div class="flower-stock">2 lbs</div></div></div>
+    <div class="flower-card" data-type="indica"><div class="flower-type t-indica">Indica Hybrid</div><div class="flower-name">Black Maple</div><div class="flower-footer"><div class="flower-price">$1,300<span class="unit">/lb</span></div><div class="flower-stock">5 lbs</div></div></div>
+    <div class="flower-card" data-type="sativa"><div class="flower-type t-sativa">Sativa</div><div class="flower-name">Blue Dream</div><div class="flower-footer"><div class="flower-price">$1,300<span class="unit">/lb</span></div><div class="flower-stock">12 lbs</div></div></div>
+    <div class="flower-card" data-type="indica"><div class="flower-type t-indica">Indica Hybrid</div><div class="flower-name">Candy Fumez</div><div class="flower-footer"><div class="flower-price">$1,300<span class="unit">/lb</span></div><div class="flower-stock">5 lbs</div></div></div>
+    <div class="flower-card" data-type="hybrid"><div class="flower-type t-hybrid">Hybrid</div><div class="flower-name">Cap Junky</div><div class="flower-footer"><div class="flower-price">$1,300<span class="unit">/lb</span></div><div class="flower-stock">2 lbs</div></div></div>
+    <div class="flower-card" data-type="indica"><div class="flower-type t-indica">Indica</div><div class="flower-name">Cement Shoes</div><div class="flower-footer"><div class="flower-price">$1,300<span class="unit">/lb</span></div><div class="flower-stock">2 lbs</div></div></div>
+    <div class="flower-card" data-type="hybrid"><div class="flower-type t-hybrid">Hybrid</div><div class="flower-name">Cereal Milk</div><div class="flower-footer"><div class="flower-price">$1,300<span class="unit">/lb</span></div><div class="flower-stock">3 lbs</div></div></div>
+    <div class="flower-card" data-type="hybrid"><div class="flower-type t-hybrid">Sativa Hybrid</div><div class="flower-name">Coolio</div><div class="flower-footer"><div class="flower-price">$1,300<span class="unit">/lb</span></div><div class="flower-stock">2 lbs</div></div></div>
+    <div class="flower-card" data-type="hybrid"><div class="flower-type t-hybrid">Hybrid</div><div class="flower-name">Dark Rainbow</div><div class="flower-footer"><div class="flower-price">$1,300<span class="unit">/lb</span></div><div class="flower-stock">4 lbs</div></div></div>
+    <div class="flower-card" data-type="sativa"><div class="flower-type t-sativa">Sativa</div><div class="flower-name">Durban Poison</div><div class="flower-footer"><div class="flower-price">$1,300<span class="unit">/lb</span></div><div class="flower-stock">4 lbs</div></div></div>
+    <div class="flower-card" data-type="hybrid"><div class="flower-type t-hybrid">Hybrid</div><div class="flower-name">Dulce Fresca</div><div class="flower-footer"><div class="flower-price">$1,300<span class="unit">/lb</span></div><div class="flower-stock">3 lbs</div></div></div>
+    <div class="flower-card" data-type="sativa"><div class="flower-type t-sativa">Sativa</div><div class="flower-name">Gas Station Candy</div><div class="flower-footer"><div class="flower-price">$1,300<span class="unit">/lb</span></div><div class="flower-stock">4 lbs</div></div></div>
+    <div class="flower-card" data-type="sativa"><div class="flower-type t-sativa">Sativa</div><div class="flower-name">Green Crack</div><div class="flower-footer"><div class="flower-price">$1,300<span class="unit">/lb</span></div><div class="flower-stock">5 lbs</div></div></div>
+    <div class="flower-card" data-type="indica"><div class="flower-type t-indica">Indica Hybrid</div><div class="flower-name">Hi-Chew</div><div class="flower-footer"><div class="flower-price">$1,300<span class="unit">/lb</span></div><div class="flower-stock">4 lbs</div></div></div>
+    <div class="flower-card" data-type="hybrid"><div class="flower-type t-hybrid">Hybrid</div><div class="flower-name">Killer Cupcake</div><div class="flower-footer"><div class="flower-price">$1,300<span class="unit">/lb</span></div><div class="flower-stock">4 lbs</div></div></div>
+    <div class="flower-card" data-type="sativa"><div class="flower-type t-sativa">Sativa</div><div class="flower-name">Lemon Skunk</div><div class="flower-footer"><div class="flower-price">$1,300<span class="unit">/lb</span></div><div class="flower-stock">5 lbs</div></div></div>
+    <div class="flower-card" data-type="hybrid"><div class="flower-type t-hybrid">Hybrid</div><div class="flower-name">Mac 1 Caps Cut</div><div class="flower-footer"><div class="flower-price">$1,300<span class="unit">/lb</span></div><div class="flower-stock">2 lbs</div></div></div>
+    <div class="flower-card" data-type="indica"><div class="flower-type t-indica">Indica Hybrid</div><div class="flower-name">Mac Daddy</div><div class="flower-footer"><div class="flower-price">$1,300<span class="unit">/lb</span></div><div class="flower-stock">5 lbs</div></div></div>
+    <div class="flower-card" data-type="hybrid"><div class="flower-type t-hybrid">Hybrid</div><div class="flower-name">Pablos Pineapple</div><div class="flower-footer"><div class="flower-price">$1,300<span class="unit">/lb</span></div><div class="flower-stock">4 lbs</div></div></div>
+    <div class="flower-card" data-type="hybrid"><div class="flower-type t-hybrid">Sativa Hybrid</div><div class="flower-name">Point Break</div><div class="flower-footer"><div class="flower-price">$1,300<span class="unit">/lb</span></div><div class="flower-stock">6 lbs</div></div></div>
+    <div class="flower-card" data-type="hybrid"><div class="flower-type t-hybrid">Hybrid</div><div class="flower-name">Rancid Rainbow</div><div class="flower-footer"><div class="flower-price">$1,300<span class="unit">/lb</span></div><div class="flower-stock">5 lbs</div></div></div>
+    <div class="flower-card" data-type="indica"><div class="flower-type t-indica">Indica</div><div class="flower-name">RS 11</div><div class="flower-footer"><div class="flower-price">$1,300<span class="unit">/lb</span></div><div class="flower-stock">4 lbs</div></div></div>
+    <div class="flower-card" data-type="indica"><div class="flower-type t-indica">Indica Hybrid</div><div class="flower-name">SFV</div><div class="flower-footer"><div class="flower-price">$1,300<span class="unit">/lb</span></div><div class="flower-stock">1 lb</div></div></div>
+    <div class="flower-card" data-type="hybrid"><div class="flower-type t-hybrid">Hybrid</div><div class="flower-name">Shoki</div><div class="flower-footer"><div class="flower-price">$1,300<span class="unit">/lb</span></div><div class="flower-stock">2 lbs</div></div></div>
+    <div class="flower-card" data-type="hybrid"><div class="flower-type t-hybrid">Hybrid</div><div class="flower-name">Sundae Driver</div><div class="flower-footer"><div class="flower-price">$1,300<span class="unit">/lb</span></div><div class="flower-stock">4 lbs</div></div></div>
+    <div class="flower-card" data-type="hybrid"><div class="flower-type t-hybrid">Sativa Hybrid</div><div class="flower-name">Tres Leches</div><div class="flower-footer"><div class="flower-price">$1,300<span class="unit">/lb</span></div><div class="flower-stock">3 lbs</div></div></div>
+
+  </div>
+</div>
+
+<!-- SMALLS -->
+<div class="section" id="sec-smalls">
+  <div class="section-header">
+    <span class="section-title">Smalls</span>
+    <span class="section-note">$850 / lb</span>
+  </div>
+  <div class="smalls-wrap">
+    <div>
+      <div class="smalls-title">Indoor Smalls</div>
+      <div class="smalls-desc">Same premium indoor genetics — smaller bud size.<br>All strains subject to current availability.<br>Contact us to check what's in stock.</div>
+    </div>
+    <div><div class="smalls-price-big">$850<span class="unit"> / lb</span></div></div>
+  </div>
+</div>
+
+<!-- CONCENTRATES -->
+<div class="section" id="sec-concentrates">
+  <div class="section-header">
+    <span class="section-title">Concentrates</span>
+    <span class="section-note">Live Resin</span>
+  </div>
+  <div class="conc-grid">
+    <div class="conc-card">
+      <img class="conc-img"
+        src="https://cdn.jsdelivr.net/gh/CannaDispo/Cannadispo.github.io@main/images/crumblewhite.jpeg"
+        alt="Live Resin Crumble"
+        onerror="this.src='https://raw.githubusercontent.com/CannaDispo/Cannadispo.github.io/main/images/crumblewhite.jpeg'">
+      <div class="conc-body">
+        <div class="conc-name">Live Resin Crumble</div>
+        <div class="conc-prices">
+          <div class="conc-price-box"><div class="conc-price-label">Per Pound</div><div class="conc-price-val">$1,200</div></div>
+          <div class="conc-price-box"><div class="conc-price-label">Per Ounce</div><div class="conc-price-val">$100</div></div>
+        </div>
+      </div>
+    </div>
+    <div class="conc-card">
+      <img class="conc-img"
+        src="https://cdn.jsdelivr.net/gh/CannaDispo/Cannadispo.github.io@main/images/waxbadder.jpeg"
+        alt="Live Resin Batter"
+        onerror="this.src='https://raw.githubusercontent.com/CannaDispo/Cannadispo.github.io/main/images/waxbadder.jpeg'">
+      <div class="conc-body">
+        <div class="conc-name">Live Resin Batter</div>
+        <div class="conc-prices">
+          <div class="conc-price-box"><div class="conc-price-label">Per Pound</div><div class="conc-price-val">$1,200</div></div>
+          <div class="conc-price-box"><div class="conc-price-label">Per Ounce</div><div class="conc-price-val">$100</div></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- DISPOSABLES -->
+<div class="section" id="sec-disposables">
+  <div class="section-header">
+    <span class="section-title">Disposables</span>
+    <span class="section-count">50 units / box</span>
+  </div>
+  <div class="disp-list">
+    <div class="disp-row"><div><div class="disp-name">1g Live Resin Disposable</div><div class="disp-sub">50 per box</div></div><div class="disp-price">$800</div></div>
+    <div class="disp-row"><div><div class="disp-name">2g Live Resin Disposable</div><div class="disp-sub">50 per box</div></div><div class="disp-price">$1,100</div></div>
+    <div class="disp-row"><div><div class="disp-name">1g Live Rosin Disposable</div><div class="disp-sub">50 per box</div></div><div class="disp-price">$1,400</div></div>
+  </div>
+</div>
+
+<!-- EDIBLES -->
+<div class="section" id="sec-edibles">
+  <div class="section-header"><span class="section-title">Edibles</span></div>
+  <div class="slushy-card">
+    <div class="slushy-top">
+      <div class="slushy-name">D9 Slushy Mix</div>
+      <div class="slushy-sub">1-Gallon Jug · 25 Flavors · Makes 80 × 8oz Cups</div>
+    </div>
+    <div class="slushy-tiers">
+      <div class="slushy-tier"><div class="tier-dose">10mg / cup</div><div class="tier-price">$120</div><div class="tier-note">per jug</div></div>
+      <div class="slushy-tier"><div class="tier-dose">20mg / cup</div><div class="tier-price">$170</div><div class="tier-note">per jug</div></div>
+      <div class="slushy-tier"><div class="tier-dose">50mg / cup</div><div class="tier-price">$300</div><div class="tier-note">per jug</div></div>
+      <div class="slushy-tier"><div class="tier-dose">100mg / cup</div><div class="tier-price">$500</div><div class="tier-note">per jug</div></div>
+    </div>
+  </div>
+  <div class="edibles-grid">
+    <div class="edible-card"><div class="edible-cat">Baked Goods</div><div class="edible-name">Chocolate Chip Cookies</div><div class="edible-details">25mg THC · 25mg CBD per cookie<br>Individually packaged & sealed · Unlabeled<br>Shelf-ready with your label</div><div class="edible-price">$175<span class="unit">/ 50 cookies</span></div></div>
+    <div class="edible-card"><div class="edible-cat">Baked Goods</div><div class="edible-name">Cosmic Brownies</div><div class="edible-details">25mg THC · 25mg CBD per brownie<br>Individually packaged & sealed · Unlabeled<br>Shelf-ready with your label</div><div class="edible-price">$175<span class="unit">/ 50 brownies</span></div></div>
+    <div class="edible-card"><div class="edible-cat">Baked Goods</div><div class="edible-name">Rice Krispie Treats</div><div class="edible-details">25mg THC · 25mg CBD per treat<br>Individually packaged & sealed · Unlabeled<br>Shelf-ready with your label</div><div class="edible-price">$175<span class="unit">/ 50 treats</span></div></div>
+    <div class="edible-card"><div class="edible-cat">Gummies</div><div class="edible-name">Gummy Rings</div><div class="edible-details">Peach · Sour Apple · Watermelon · Blue Raspberry · More<br>200mg THC · 200mg CBD per bag · 10 gummies / bag<br>Packed & sealed · Shelf-ready with your label</div><div class="edible-price">$120<span class="unit">/ 10 bags</span></div></div>
+  </div>
+</div>
+
+<!-- CONTACT -->
+<div class="section" id="sec-contact">
+  <div class="section-header"><span class="section-title">Place an Inquiry</span></div>
+  <div class="contact-wrap">
+    <p class="contact-intro">All inquiries are handled privately and confidentially.<br>We'll get back to you as quickly as possible.</p>
+    <form id="contact-form" action="https://api.web3forms.com/submit" method="POST">
+      <input type="hidden" name="access_key" value="YOUR_WEB3FORMS_ACCESS_KEY">
+      <input type="hidden" name="subject" value="Canopy — New Wholesale Inquiry">
+      <input type="checkbox" name="botcheck" style="display:none">
+      <div class="form-row"><label class="form-label">Name</label><input class="form-input" type="text" name="name" required placeholder="Your name"></div>
+      <div class="form-row"><label class="form-label">Business / Store Name</label><input class="form-input" type="text" name="business" placeholder="Store or business name"></div>
+      <div class="form-row"><label class="form-label">Email</label><input class="form-input" type="email" name="email" required placeholder="your@email.com"></div>
+      <div class="form-row"><label class="form-label">Phone — Fastest Reply</label><input class="form-input" type="tel" name="phone" placeholder="(000) 000-0000"></div>
+      <div class="form-row">
+        <label class="form-label">Interested In</label>
+        <select class="form-select" name="interest">
+          <option value="">Select a category...</option>
+          <option>Indoor Flower</option>
+          <option>Smalls</option>
+          <option>Concentrates</option>
+          <option>Disposables</option>
+          <option>Edibles</option>
+          <option>Multiple Categories</option>
+        </select>
+      </div>
+      <div class="form-row"><label class="form-label">Message</label><textarea class="form-textarea" name="message" placeholder="Tell us what you're looking for..."></textarea></div>
+      <button class="form-submit" type="submit">Send Inquiry →</button>
+      <div class="form-success" id="form-success">✓ Message received. We'll be in touch shortly.</div>
+    </form>
+  </div>
+</div>
+
+<div class="refresh-bar">Canopy Wholesale · Live Board</div>
+
+<script>
+  const CHARS = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789·/$, ';
+
+  // Scramble a single text node with split-flap effect
+  function flapText(el, finalText, delay, speed) {
+    if (!el || !finalText.trim()) return;
+    const upper = finalText.toUpperCase();
+    const chars = upper.split('');
+    el.innerHTML = '';
+    chars.forEach((ch, i) => {
+      const span = document.createElement('span');
+      span.style.display = 'inline-block';
+      span.style.minWidth = ch === ' ' ? '0.3em' : '';
+      span.textContent = ch === ' ' ? '\u00A0' : CHARS[Math.floor(Math.random() * CHARS.length)];
+      el.appendChild(span);
+
+      if (ch === ' ') return; // spaces don't need to animate
+
+      const startAt = delay + i * 35;
+      const endAt   = startAt + speed;
+      const ticker  = setInterval(() => {
+        const now = Date.now();
+        if (now < endAt) {
+          span.textContent = CHARS[Math.floor(Math.random() * CHARS.length)];
+        } else {
+          span.textContent = ch;
+          clearInterval(ticker);
+        }
+      }, 40);
+      setTimeout(() => { span.textContent = ch; clearInterval(ticker); }, endAt - Date.now() + 80);
+    });
+  }
+
+  // Walk all text-bearing leaf nodes in a section and flap them
+  function flapSection(sectionEl) {
+    const baseDelay = Date.now();
+
+    // Collect all elements with direct text content we want to animate
+    const selectors = [
+      '.section-title', '.section-count', '.section-note',
+      '.flower-name', '.flower-type', '.flower-price',
+      '.disp-name', '.disp-sub', '.disp-price',
+      '.conc-name', '.conc-price-label', '.conc-price-val',
+      '.smalls-title', '.smalls-price-big',
+      '.slushy-name', '.slushy-sub', '.tier-dose', '.tier-price', '.tier-note',
+      '.edible-name', '.edible-cat', '.edible-price',
+      '.section-header span'
+    ];
+
+    let stagger = 0;
+    selectors.forEach(sel => {
+      sectionEl.querySelectorAll(sel).forEach(el => {
+        const txt = el.dataset.orig || el.textContent;
+        if (!el.dataset.orig) el.dataset.orig = txt;
+        const delay = stagger;
+        const speed = 300 + Math.random() * 200;
+        setTimeout(() => flapText(el, txt, Date.now(), speed), delay);
+        stagger += 18;
+      });
+    });
+  }
+
+  // Store original text for all animated elements before any changes
+  function storeOriginals() {
+    document.querySelectorAll(
+      '.section-title,.section-count,.section-note,' +
+      '.flower-name,.flower-type,.flower-price,' +
+      '.disp-name,.disp-sub,.disp-price,' +
+      '.conc-name,.conc-price-label,.conc-price-val,' +
+      '.smalls-title,.smalls-price-big,' +
+      '.slushy-name,.slushy-sub,.tier-dose,.tier-price,.tier-note,' +
+      '.edible-name,.edible-cat,.edible-price'
+    ).forEach(el => { el.dataset.orig = el.textContent; });
+  }
+
+  function showTab(id, btn) {
+    document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
+    document.querySelectorAll('.nav-tab').forEach(t => t.classList.remove('active'));
+    const sec = document.getElementById('sec-' + id);
+    sec.classList.add('active');
+    btn.classList.add('active');
+    flapSection(sec);
+  }
+
+  function filterFlower(type, btn) {
+    document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
+    btn.classList.add('active');
+    const cards = document.querySelectorAll('#flower-grid .flower-card');
+    let count = 0;
+    cards.forEach(card => {
+      const show = type === 'all' || card.dataset.type === type;
+      card.style.display = show ? '' : 'none';
+      if (show) count++;
+    });
+    const labelEl = document.getElementById('flower-label');
+    const newText = count + ' strains in stock';
+    labelEl.dataset.orig = newText;
+    flapText(labelEl, newText, Date.now(), 400);
+    document.getElementById('flower-count').textContent = count;
+  }
+
+  document.getElementById('last-updated').textContent = new Date().toLocaleTimeString();
+
+  window.addEventListener('DOMContentLoaded', () => {
+    storeOriginals();
+    setTimeout(() => flapSection(document.querySelector('.section.active')), 200);
+  });
+
+  document.getElementById('contact-form').addEventListener('submit', async function(e) {
+    e.preventDefault();
+    const btn = this.querySelector('.form-submit');
+    btn.textContent = 'Sending...'; btn.disabled = true;
+    try {
+      const res = await fetch('https://api.web3forms.com/submit', { method: 'POST', body: new FormData(this) });
+      const json = await res.json();
+      if (json.success) {
+        document.getElementById('form-success').style.display = 'block';
+        this.reset(); btn.textContent = 'Sent ✓';
+      } else { btn.textContent = 'Error — Try Again'; btn.disabled = false; }
+    } catch { btn.textContent = 'Error — Try Again'; btn.disabled = false; }
+  });
+</script>
+</body>
+</html>
